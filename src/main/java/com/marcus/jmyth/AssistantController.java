@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @RestController
 @RequestMapping("/assistant")
-@CrossOrigin(origins = {"http://localhost:5173", "https://dwmarcuskim.github.io/jmyth-front/"})
+@CrossOrigin(origins = {"http://localhost:5173", "https://dwmarcuskim.github.io"})
 public class AssistantController {
     private final AtomicInteger threadCounter = new AtomicInteger(0);
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(0, r -> Thread.ofVirtual()
