@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @RestController
 @RequestMapping("/assistant")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AssistantController {
     private final AtomicInteger threadCounter = new AtomicInteger(0);
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(0, r -> Thread.ofVirtual()
@@ -49,7 +50,7 @@ public class AssistantController {
     }
 
     @DeleteMapping("/thread/{threadId}")
-    public ResponseEntity<Object> deleteThread(String threadId) {
+    public ResponseEntity<Object> deleteThread(@PathVariable("threadId") String threadId) {
         var threads = assistanceClientService.deleteThreads(threadId);
         if (threads.getStatusCode().isError()) {
             if (threads.getBody() == null) {
@@ -62,6 +63,23 @@ public class AssistantController {
         }
 
         return ResponseEntity.ok(threads.getBody().getId());
+    }
+
+    @GetMapping("/thread/{threadId}/message")
+    public ResponseEntity<Object> getMessagesList(@PathVariable("threadId") String threadId) {
+        var mList = assistanceClientService.getMessagesList(threadId, null);
+        if (mList.getStatusCode().isError()) {
+            if (mList.getBody() == null) {
+                return ResponseEntity.status(mList.getStatusCode()).build();
+            }
+            return ResponseEntity.status(mList.getStatusCode()).body(mList.getBody());
+        }
+
+        if (mList.getBody() == null) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        return ResponseEntity.ok(mList.getBody().getData());
     }
 
     @PostMapping("/thread/{threadId}/message")
